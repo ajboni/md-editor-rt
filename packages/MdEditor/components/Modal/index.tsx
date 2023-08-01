@@ -1,4 +1,11 @@
-import React, { useRef, useState, ReactElement, useEffect, useMemo } from 'react';
+import React, {
+  CSSProperties,
+  useRef,
+  useState,
+  ReactElement,
+  useEffect,
+  useMemo
+} from 'react';
 import { prefix } from '~/config';
 import { keyMove } from '~/utils/dom';
 
@@ -13,10 +20,11 @@ export type ModalProps = Readonly<{
   onAdjust?: (val: boolean) => void;
   children?: any;
   className?: string;
+  style?: CSSProperties;
 }>;
 
 const Modal = (props: ModalProps) => {
-  const { onClose = () => {} } = props;
+  const { onClose = () => {}, onAdjust = () => {}, style = {} } = props;
   const [modalVisible, setMV] = useState(props.visible);
   const [modalClass, setModalClass] = useState([`${prefix}-modal`]);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -109,7 +117,10 @@ const Modal = (props: ModalProps) => {
   }, [inited, props.visible]);
 
   return (
-    <div className={props.className} style={{ display: modalVisible ? 'block' : 'none' }}>
+    <div
+      className={props.className}
+      style={{ display: modalVisible ? 'block' : 'none', ...style }}
+    >
       <div className={`${prefix}-modal-mask`} onClick={onClose} />
       <div
         className={modalClass.join(' ')}
@@ -145,7 +156,7 @@ const Modal = (props: ModalProps) => {
                   }));
                 }
 
-                props.onAdjust instanceof Function && props.onAdjust(!props.isFullscreen);
+                onAdjust instanceof Function && onAdjust(!props.isFullscreen);
               }}
             >
               <svg className={`${prefix}-icon`} aria-hidden="true">
@@ -174,9 +185,5 @@ const Modal = (props: ModalProps) => {
     </div>
   );
 };
-
-Modal.defaultProps = {
-  onAdjust() {}
-} as ModalProps;
 
 export default Modal;

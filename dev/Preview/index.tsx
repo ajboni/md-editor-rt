@@ -12,6 +12,7 @@ import {
 // import Editor from '../../lib/md-editor-rt.es';
 import mdText from '../data.md';
 import { Theme } from '../App';
+// import TargetBlankExtension from './image/TargetBlankExtension.js';
 // import '../../lib/style.css';
 
 import './index.less';
@@ -37,13 +38,22 @@ import { CompletionSource } from '@codemirror/autocomplete';
 // import { cdnBase } from '../../MdEditor/config';
 
 config({
-  codeMirrorExtensions(theme, extensions, keyBindings) {
-    console.log(theme, extensions, keyBindings);
+  codeMirrorExtensions(theme, extensions) {
+    // console.log(theme, extensions, keyBindings);
 
     // return extensions;
     return [...extensions, lineNumbers()];
   },
-  // markdownItConfig: (md) => {},
+  // markdownItConfig: (mdit) => {
+  // mdit.use(ancher, {
+  //   permalink: true
+  // });
+  // mdit.use(TargetBlankExtension);
+  // },
+  // markdownItPlugins(plugins) {
+  //   console.log(plugins);
+  //   return [];
+  // },
   editorExtensions: {
     //     prettier: {
     //       prettierInstance: prettier,
@@ -284,6 +294,7 @@ export default ({ theme, previewTheme, codeTheme, lang }: PreviewProp) => {
           // onBlur={console.log}
           // onFocus={console.log}
           editorId="md-editor-preview"
+          showToolbarName
           toolbars={[
             'bold',
             'underline',
@@ -418,6 +429,8 @@ export default ({ theme, previewTheme, codeTheme, lang }: PreviewProp) => {
           formatCopiedText={(text: string) => {
             return `${text} \nfrom @imzbf`;
           }}
+          footers={['markdownTotal', '=', 0, 'scrollSwitch']}
+          defFooters={[<span key={'dev-footer-demo'}>^_^</span>]}
         />
         <br />
         {/* <MdEditor

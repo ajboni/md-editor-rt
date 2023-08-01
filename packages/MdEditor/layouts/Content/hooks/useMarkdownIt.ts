@@ -4,7 +4,7 @@ import ImageFiguresPlugin from 'markdown-it-image-figures';
 import TaskListPlugin from 'markdown-it-task-lists';
 import bus from '~/utils/event-bus';
 import { generateCodeRowNumber } from '~/utils';
-import { HeadList, Themes } from '~/type';
+import { HeadList, MarkdownItConfigPlugin, Themes } from '~/type';
 import { configOption } from '~/config';
 
 import useHighlight from './useHighlight';
@@ -26,38 +26,40 @@ const initLineNumber = (md: mdit) => {
     'ordered_list_open',
     'bullet_list_open',
     'blockquote_open',
-    'hr'
+    'hr',
+    'html_block',
+    'fence'
   ].forEach((rule) => {
-    md.renderer.rules[rule] = (tokens, idx, options, _env, self) => {
-      let line;
-      if (tokens[idx].map && tokens[idx].level === 0) {
-        line = tokens[idx].map![0];
-        tokens[idx].attrSet('data-line', String(line));
-      }
-      return self.renderToken(tokens, idx, options);
-    };
-  });
-
-  ['html_block', 'fence'].forEach((rule) => {
     const backup = md.renderer.rules[rule];
 
-    md.renderer.rules[rule] = (tokens, idx, options, env, self) => {
-      let line;
-      const _htmlCode = backup!(tokens, idx, options, env, self);
+    if (!backup) {
+      md.renderer.rules[rule] = (tokens, idx, options, _env, self) => {
+        let line;
+        if (tokens[idx].map && tokens[idx].level === 0) {
+          line = tokens[idx].map![0];
+          tokens[idx].attrSet('data-line', String(line));
+        }
+        return self.renderToken(tokens, idx, options);
+      };
+    } else {
+      md.renderer.rules[rule] = (tokens, idx, options, env, self) => {
+        let line;
+        const _htmlCode = backup(tokens, idx, options, env, self);
 
-      if (tokens[idx].map && tokens[idx].level === 0) {
-        line = tokens[idx].map![0];
-        return _htmlCode.replace(/^(<[^>]*)/, `$1 data-line="${line}"`);
-      }
+        if (tokens[idx].map && tokens[idx].level === 0) {
+          line = tokens[idx].map![0];
+          return _htmlCode.replace(/^(<[^>]*)/, `$1 data-line="${line}"`);
+        }
 
-      return _htmlCode;
-    };
+        return _htmlCode;
+      };
+    }
   });
 };
 
 const useMarkdownIt = (props: ContentPreviewProps, previewOnly: boolean) => {
   const { onHtmlChanged = () => {}, onGetCatalog = () => {} } = props;
-  const { editorConfig, markdownItConfig } = configOption;
+  const { editorConfig, markdownItConfig, markdownItPlugins } = configOption;
   //
   const { editorId, showCodeRowNumber, theme } = useContext(EditorContext);
 
@@ -80,16 +82,50 @@ const useMarkdownIt = (props: ContentPreviewProps, previewOnly: boolean) => {
 
     markdownItConfig!(md_);
 
-    md_.use(KatexPlugin, { katexRef });
-    md_.use(ImageFiguresPlugin, { figcaption: true });
-    md_.use(AdmonitionPlugin);
-    md_.use(TaskListPlugin);
-    md_.use(HeadingPlugin, { mdHeadingId: props.mdHeadingId, headsRef });
-    md_.use(CodeTabsPlugin, { editorId });
+    const plugins: MarkdownItConfigPlugin[] = [
+      {
+        type: 'katex',
+        plugin: KatexPlugin,
+        options: { katexRef }
+      },
+      {
+        type: 'image',
+        plugin: ImageFiguresPlugin,
+        options: { figcaption: true, classes: 'md-zoom' }
+      },
+      {
+        type: 'admonition',
+        plugin: AdmonitionPlugin,
+        options: {}
+      },
+      {
+        type: 'taskList',
+        plugin: TaskListPlugin,
+        options: {}
+      },
+      {
+        type: 'heading',
+        plugin: HeadingPlugin,
+        options: { mdHeadingId: props.mdHeadingId, headsRef }
+      },
+      {
+        type: 'codeTabs',
+        plugin: CodeTabsPlugin,
+        options: { editorId }
+      }
+    ];
 
     if (!props.noMermaid) {
-      md_.use(MermaidPlugin, { themeRef, noMermaid: props.noMermaid });
+      plugins.push({
+        type: 'mermaid',
+        plugin: MermaidPlugin,
+        options: { themeRef }
+      });
     }
+
+    markdownItPlugins!(plugins).forEach((item) => {
+      md_.use(item.plugin, item.options);
+    });
 
     md_.set({
       highlight: (str, language) => {

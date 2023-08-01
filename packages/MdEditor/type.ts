@@ -1,4 +1,5 @@
 import { CSSProperties, ReactElement } from 'react';
+import markdownit from 'markdown-it/lib';
 import { CompletionSource } from '@codemirror/autocomplete';
 import { Extension } from '@codemirror/state';
 import { KeyBinding } from '@codemirror/view';
@@ -411,6 +412,12 @@ export interface EditorProps extends MdPreviewProps {
    * })
    */
   completions?: Array<CompletionSource>;
+  /**
+   * 是否在工具栏下面显示对应的文字名称
+   *
+   * @default false
+   */
+  showToolbarName?: boolean;
 }
 
 export interface ContentType {
@@ -459,6 +466,12 @@ export interface MermaidTemplate {
    * 旅程图
    */
   journey?: string;
+}
+
+export interface MarkdownItConfigPlugin {
+  type: string;
+  plugin: markdownit.PluginWithParams;
+  options: any;
 }
 
 export interface ConfigOption {
@@ -533,6 +546,15 @@ export interface ConfigOption {
    * 自定义markdown-it核心库扩展、属性等
    */
   markdownItConfig?: (md: markdownit) => void;
+  /**
+   * 挑选编辑器已预设的markdownIt的扩展
+   *
+   * @param plugins markdownIt的扩展，带编辑器已设定的属性
+   * @returns plugins
+   */
+  markdownItPlugins?: (
+    plugins: Array<MarkdownItConfigPlugin>
+  ) => Array<MarkdownItConfigPlugin>;
 }
 
 /**
@@ -599,7 +621,15 @@ export interface InsertParam {
   deviationEnd: number;
 }
 
+/**
+ * 插入的内容的构造函数
+ */
 export type InsertContentGenerator = (selectedText: string) => InsertParam;
+
+/**
+ * 插入内容的通用函数类型
+ */
+export type Insert = (generate: InsertContentGenerator) => void;
 
 export type FocusOption =
   | 'start'
@@ -679,7 +709,7 @@ export interface ExposeParam {
    * deviationEnd   插入后选中位置的结束偏移量
    *
    */
-  insert(generate: InsertContentGenerator): void;
+  insert: Insert;
 
   /**
    * 手动聚焦

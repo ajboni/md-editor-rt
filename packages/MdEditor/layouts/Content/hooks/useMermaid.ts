@@ -17,7 +17,7 @@ const useMermaid = (props: ContentPreviewProps) => {
   const mermaidConf = editorExtensions?.mermaid;
 
   const mermaidRef = useRef(mermaidConf?.instance);
-  const [reRender, setReRender] = useState(false);
+  const [reRender, setReRender] = useState(-1);
 
   const [mermaidCache] = useState(
     () =>
@@ -38,7 +38,8 @@ const useMermaid = (props: ContentPreviewProps) => {
         theme: theme === 'dark' ? 'dark' : 'default'
       });
 
-      setReRender((_r) => !_r);
+      // 严格模式下，如果reRender是boolean型，会执行两次，这是reRender将不会effect
+      setReRender((_r) => _r + 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme]);
@@ -94,9 +95,11 @@ const useMermaid = (props: ContentPreviewProps) => {
       svgContainingElement.style.zIndex = '-10000';
       svgContainingElement.style.top = '-10000';
 
-      document.body.appendChild(svgContainingElement);
-
       let count = mermaidSourceEles.length;
+
+      if (count > 0) {
+        document.body.appendChild(svgContainingElement);
+      }
 
       mermaidSourceEles.forEach(async (item) => {
         let mermaidHtml = mermaidCache.get(item.innerText) as string;
