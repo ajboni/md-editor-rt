@@ -1,4 +1,4 @@
-import{u as m,r as t,j as n,I as c,b as u}from"./index-46a25777.js";const o=`> Use it online: [Go](https://codesandbox.io/s/elated-khorana-65jmr)
+import{u as c,r as t,j as n,I as m,d as u}from"./index-8c501523.js";const o=`> Use it online: [Go](https://codesandbox.io/s/elated-khorana-65jmr)
 
 ## 🔖 MdPreview Props
 
@@ -286,6 +286,100 @@ This is the props of \`MdPreview\`, which is also part of \`MdEditor\`:
 - **default**: \`false\`
 
   Enable the function of enlarging images.
+
+---
+
+### 😬 customIcon
+
+- **type**: \`CustomIcon\`
+- **default**: \`{}\`
+
+  Customized icons
+
+  !!! warning Type Warning
+
+  The icon corresponding to copy can only be a string, while others can be components or strings
+
+  !!!
+
+  \`\`\`tsx
+  import React from 'react';
+  import type { CustomIcon } from 'md-editor-rt';
+  import { MdEditor } from 'md-editor-rt';
+  // 假设你使用了三方图标库或者自定义了图标组件
+  import { IconFont } from 'tdesign-icons-react';
+  import 'md-editor-rt/lib/style.css';
+
+  const customIcon: CustomIcon = {
+    bold: {
+      component: 'A'
+    },
+    // copy: '<i class="fa fa-car"></i>',
+    preview: {
+      component: '<i class="fa fa-car"></i>'
+    },
+    github: {
+      component: IconFont,
+      props: {
+        name: 'sneer'
+      }
+    }
+  };
+
+  export default () => {
+    return <MdEditor modelValue="" customIcon={customIcon} />;
+  };
+  \`\`\`
+
+  Type \`CustomIcon\`
+
+  \`\`\`ts
+  type IconName =
+    | 'bold'
+    | 'underline'
+    | 'italic'
+    | 'strike-through'
+    | 'title'
+    | 'sub'
+    | 'sup'
+    | 'quote'
+    | 'unordered-list'
+    | 'ordered-list'
+    | 'task'
+    | 'code-row'
+    | 'code'
+    | 'link'
+    | 'image'
+    | 'table'
+    | 'revoke'
+    | 'next'
+    | 'baocun'
+    | 'prettier'
+    | 'suoxiao'
+    | 'fangda'
+    | 'fullscreen-exit'
+    | 'fullscreen'
+    | 'preview'
+    | 'coding'
+    | 'catalog'
+    | 'github'
+    | 'mermaid'
+    | 'formula'
+    | 'close'
+    | 'delete'
+    | 'upload';
+
+  type CustomIcon = {
+    [key in IconName]?: {
+      component: Component | JSX.Element | string;
+      props: {
+        [key: string | number | symbol]: any;
+      };
+    };
+  } & {
+    copy?: string;
+  };
+  \`\`\`
 
 ---
 
@@ -1198,6 +1292,27 @@ export interface EditorExtensions {
 
 ---
 
+### 🫨 iconfontType
+
+Set the way to display icons:
+
+- \`svg\`: with symbol
+- \`class\`: with font-class
+
+If the icon is customized through the attribute \`customIcon\`, the customized icon will be used first.
+
+This can be usually used to avoid the issue of incompatible symbol.
+
+\`\`\`js
+import { config } from 'md-editor-rt';
+
+config({
+  iconfontType: 'class'
+});
+\`\`\`
+
+---
+
 ## 🪡 Shortcut Keys
 
 !!! warning Pay attention
@@ -1940,6 +2055,100 @@ export default () => {
 - **默认值**：\`false\`
 
   是否关闭编辑器默认的放大功能（\`^4.4.0\`）
+
+---
+
+### 😬 customIcon
+
+- **类型**：\`CustomIcon\`
+- **默认值**：\`{}\`
+
+  自定义的图标
+
+  !!! warning 类型提示
+
+  copy 对应的图标只能是字符串，其他的都可以是组件或者字符串
+
+  !!!
+
+  \`\`\`tsx
+  import React from 'react';
+  import type { CustomIcon } from 'md-editor-rt';
+  import { MdEditor } from 'md-editor-rt';
+  // 假设你使用了三方图标库或者自定义了图标组件
+  import { IconFont } from 'tdesign-icons-react';
+  import 'md-editor-rt/lib/style.css';
+
+  const customIcon: CustomIcon = {
+    bold: {
+      component: 'A'
+    },
+    // copy: '<i class="fa fa-car"></i>',
+    preview: {
+      component: '<i class="fa fa-car"></i>'
+    },
+    github: {
+      component: IconFont,
+      props: {
+        name: 'sneer'
+      }
+    }
+  };
+
+  export default () => {
+    return <MdEditor modelValue="" customIcon={customIcon} />;
+  };
+  \`\`\`
+
+  类型\`CustomIcon\`
+
+  \`\`\`ts
+  type IconName =
+    | 'bold'
+    | 'underline'
+    | 'italic'
+    | 'strike-through'
+    | 'title'
+    | 'sub'
+    | 'sup'
+    | 'quote'
+    | 'unordered-list'
+    | 'ordered-list'
+    | 'task'
+    | 'code-row'
+    | 'code'
+    | 'link'
+    | 'image'
+    | 'table'
+    | 'revoke'
+    | 'next'
+    | 'baocun'
+    | 'prettier'
+    | 'suoxiao'
+    | 'fangda'
+    | 'fullscreen-exit'
+    | 'fullscreen'
+    | 'preview'
+    | 'coding'
+    | 'catalog'
+    | 'github'
+    | 'mermaid'
+    | 'formula'
+    | 'close'
+    | 'delete'
+    | 'upload';
+
+  type CustomIcon = {
+    [key in IconName]?: {
+      component: Component | JSX.Element | string;
+      props: {
+        [key: string | number | symbol]: any;
+      };
+    };
+  } & {
+    copy?: string;
+  };
+  \`\`\`
 
 ---
 
@@ -2892,6 +3101,27 @@ export interface EditorExtensions {
 
 ---
 
+### 🫨 iconfontType
+
+固定使用那种方式展示图标，可以切换展示的方式
+
+- \`svg\`: symbol 方式
+- \`class\`: font-class 方式
+
+如果通过属性\`customIcon\`自定义的图标，会优先使用自定义的。
+
+这通常可以用来规避 symbol 方式不兼容的问题。
+
+\`\`\`js
+import { config } from 'md-editor-rt';
+
+config({
+  iconfontType: 'class'
+});
+\`\`\`
+
+---
+
 ## 🪡 快捷键
 
 主要以\`CTRL\`搭配对应功能英文单词首字母，冲突项添加\`SHIFT\`，再冲突替换为\`ALT\`。
@@ -3334,4 +3564,4 @@ export default () => {
 ## ✍️ 编辑此页面
 
 [doc-zh-CN](https://github.com/imzbf/md-editor-rt/blob/dev-docs/public/doc-zh-CN.md)
-`,i="doc-preview",g=()=>{const e=m(d=>d),[s,l]=t.useState(()=>e.lang==="zh-CN"?r:o),a=()=>{l(e.lang==="en-US"?o:r)};return t.useEffect(a,[e.lang]),n.jsx("div",{className:"container",children:n.jsxs("div",{className:"doc",children:[n.jsx(c,{editorId:i,modelValue:s}),n.jsx(u,{editorId:i})]})})};export{g as default};
+`,i="doc-preview",g=()=>{const e=c(d=>d),[s,l]=t.useState(()=>e.lang==="zh-CN"?r:o),a=()=>{l(e.lang==="en-US"?o:r)};return t.useEffect(a,[e.lang]),n.jsx("div",{className:"container",children:n.jsxs("div",{className:"doc",children:[n.jsx(m,{editorId:i,modelValue:s}),n.jsx(u,{editorId:i})]})})};export{g as default};
